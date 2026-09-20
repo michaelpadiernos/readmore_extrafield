@@ -4,9 +4,7 @@ namespace Drupal\readmore_extrafield\Plugin\ExtraField\Display;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\extra_field_plus\Plugin\ExtraFieldPlusDisplayFormattedBase;
-use Drupal\Core\Url;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Readmore Extra field display using extra_field + extra_field_plus.
@@ -28,7 +26,7 @@ class ReadmoreExtrafield extends ExtraFieldPlusDisplayFormattedBase {
    * {@inheritdoc}
    */
   public function viewElements(ContentEntityInterface $entity) {
-    $settings = $this->getSettings();
+    $settings = $this->getEntityExtraFieldSettings();
 
     // Token support:
     $token = FALSE;
@@ -46,9 +44,7 @@ class ReadmoreExtrafield extends ExtraFieldPlusDisplayFormattedBase {
     $element = [
       '#theme' => 'readmore_extrafield',
       '#title' => $link_title,
-      '#url' => Url::fromRoute('entity.node.canonical', [
-        'node' => $entity->id(),
-      ]),
+      '#url' => $entity->toUrl(),
       '#attributes' => [
         'class' => ['readmore-extrafield-link'],
       ],
@@ -64,7 +60,9 @@ class ReadmoreExtrafield extends ExtraFieldPlusDisplayFormattedBase {
         if ($token) {
           $class = $token->replace($class, [$entity->getEntityTypeId() => $entity], ['clear' => TRUE]);
         }
-        $element['#attributes']['class'][] = $class;
+        if (!empty($class)) {
+          $element['#attributes']['class'][] = $class;
+        }
       }
     }
 

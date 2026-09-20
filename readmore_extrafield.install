@@ -10,7 +10,7 @@
  */
 function readmore_extrafield_requirements($phase) {
   $requirements = [];
-  if ($phase == 'update') {
+  if ($phase === 'update' && (!\Drupal::moduleHandler()->moduleExists('extra_field') || !\Drupal::moduleHandler()->moduleExists('extra_field_plus'))) {
     $requirements['extra_field_plus'] = [
       'title' => t('Readmore Extrafield 3.x'),
       'value' => t('Extra Field and Extra Field Settings Provider required'),
@@ -24,6 +24,8 @@ function readmore_extrafield_requirements($phase) {
       'severity' => REQUIREMENT_ERROR,
     ];
   }
+
+  return $requirements;
 }
 
 /**
@@ -34,8 +36,8 @@ function readmore_extrafield_requirements($phase) {
  * page and update your readmore-extrafield.html.twig as variables changed.
  */
 function readmore_extrafield_update_8301(&$sandbox) {
-  \Drupal::service("module_installer")->install(["extra_field"]);
-  \Drupal::service("module_installer")->install(["extra_field_plus"]);
+  $module_installer = \Drupal::service('module_installer');
+  $module_installer->install(['extra_field', 'extra_field_plus']);
 
   return t("IMPORTANT: If you upgraded readmore_extrafield from 1.x to 3.x and you're overwriting readmore-extrafield.html.twig in your theme, check the module page and update your readmore-extrafield.html.twig as variables changed.");
 }
